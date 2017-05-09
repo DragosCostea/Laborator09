@@ -11,6 +11,8 @@ import org.doubango.ngn.events.NgnMessagingEventArgs;
 import org.doubango.ngn.utils.NgnContentType;
 import org.doubango.ngn.utils.NgnStringUtils;
 
+import java.io.UnsupportedEncodingException;
+
 import ro.pub.cs.systems.eim.lab09.ngnsip.general.Constants;
 
 public class InstantMessagingBroadcastReceiver extends BroadcastReceiver {
@@ -40,7 +42,19 @@ public class InstantMessagingBroadcastReceiver extends BroadcastReceiver {
                         // - if the payload contains actual information, convert it to a String, using the UTF-8 encoding
                         // - display the conversation in the graphic user interface (conversationTextView)
                         // !!! don't forget tp handle the UnsupportedEncodingException
-
+                        byte[] contentBytes = arguments.getPayload();
+                        if(contentBytes != null && contentBytes.length > 0) {
+                            try {
+                                String content = new String(contentBytes, "UTF-8");
+                                String conversation = conversationTextView.getText().toString();
+                                conversationTextView.setText(conversation + "Others: " + content + "\n");
+                            } catch (UnsupportedEncodingException unsupportedEncodingException) {
+                                Log.i(Constants.TAG, unsupportedEncodingException.toString());
+                                if (Constants.DEBUG) {
+                                    unsupportedEncodingException.printStackTrace();
+                                }
+                            }
+                        }
                     }
                     break;
                 default:
